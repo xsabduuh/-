@@ -778,48 +778,35 @@
                 return cardDiv;
             }
 
-            // ✅ معالج موحد لجميع الأزرار (تعديل / حذف / إيداع) باستخدام تفويض الأحداث
+            // ✅ تفويض الأحداث - الطريقة الأكثر ثباتاً
             goalsContainer.addEventListener('click', function(e) {
                 const button = e.target.closest('button');
                 if (!button) return;
 
-                const action = button.dataset.action;
-                const goalId = button.dataset.goalId;
+                const action = button.getAttribute('data-action');
+                const goalId = button.getAttribute('data-goal-id');
 
                 if (!action || !goalId) return;
 
-                // --- حذف الهدف (بعد التأكيد) ---
                 if (action === 'delete') {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    const goalIdStr = String(goalId);
-                    const goal = goals.find(g => String(g.id) === goalIdStr);
+                    // البحث عن الهدف للتأكيد
+                    const goal = goals.find(g => String(g.id) === String(goalId));
+                    if (!goal) return;
 
-                    if (!goal) {
-                        console.warn('لم يتم العثور على الهدف المطلوب حذفه:', goalIdStr);
-                        return;
-                    }
-
-                    // مربع تأكيد بسيط (يمكن استبداله بمودال جميل لاحقاً)
                     if (confirm(`هل أنت متأكد من حذف هدف "${goal.name}"؟`)) {
-                        // حذف الهدف من المصفوفة
-                        goals = goals.filter(g => String(g.id) !== goalIdStr);
+                        goals = goals.filter(g => String(g.id) !== String(goalId));
                         saveGoals();
-                        renderGoals(); // إعادة رسم الواجهة
+                        renderGoals();
                     }
-                }
-
-                // --- تعديل الهدف ---
-                else if (action === 'edit') {
+                } else if (action === 'edit') {
                     e.preventDefault();
                     e.stopPropagation();
                     const goal = goals.find(g => String(g.id) === String(goalId));
                     if (goal) openEditModal(goal);
-                }
-
-                // --- إضافة مبلغ للإيداع ---
-                else if (action === 'deposit') {
+                } else if (action === 'deposit') {
                     e.preventDefault();
                     e.stopPropagation();
                     openDepositModal(goalId);
