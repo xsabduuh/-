@@ -2,11 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>أهدافي المالية</title>
-    <!-- أيقونة التطبيق للشاشة الرئيسية (Favicon) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><circle cx='12' cy='12' r='1.5' fill='%2300ff88'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><circle cx='12' cy='12' r='1.5' fill='%2300ff88'/></svg>">
+
+    <!-- أيقونة الشاشة الرئيسية للتطبيق (Favicon & Apple Touch Icon) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2.5'><circle cx='12' cy='12' r='9' stroke='%2300ff88' fill='%23000000' stroke-width='2'/><circle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/><circle cx='12' cy='12' r='1.8' fill='%2300ff88'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><circle cx='12' cy='12' r='9' stroke='%2300ff88' fill='%23000000' stroke-width='2'/><circle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/><circle cx='12' cy='12' r='1.8' fill='%2300ff88'/></svg>">
+
+    <!-- تفعيل وضع التطبيق المستقل على iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="أهدافي المالية">
+    <meta name="theme-color" content="#000000">
+
     <style>
         :root {
             --bg: #000000;
@@ -40,7 +48,11 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; scroll-behavior: smooth; }
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
 
         body {
             background-color: var(--bg);
@@ -56,6 +68,7 @@
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
+            -webkit-text-size-adjust: 100%;
         }
 
         input, textarea, select { -webkit-user-select: text; user-select: text; }
@@ -418,7 +431,7 @@
 
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- مكتبة الأيقونات الحديثة (SVG) -->
+    <!-- مكتبة الأيقونات -->
     <svg style="display:none">
         <defs>
             <g id="icon-target"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g>
