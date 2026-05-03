@@ -1,1 +1,1052 @@
-cc
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>أهدافي المالية | Financial Goals</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --surface-2: #111111;
+            --border: #1a1a1a;
+            --border-hover: #2a2a2a;
+            --text: #e0e0e0;
+            --text-secondary: #999999;
+            --text-muted: #666666;
+            --neon: #00ff88;
+            --neon-dim: #00cc6a;
+            --neon-glow: rgba(0, 255, 136, 0.25);
+            --neon-glow-strong: rgba(0, 255, 136, 0.6);
+            --warning: #ff9500;
+            --warning-glow: rgba(255, 149, 0, 0.4);
+            --danger: #ff3b30;
+            --gold: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.5);
+            --white: #ffffff;
+            --cyan: #00d4ff;
+            --font: 'Segoe UI', 'Tajawal', 'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+            --radius-sm: 6px;
+            --radius: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0, 255, 136, 0.015) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 60%, rgba(0, 255, 136, 0.01) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(0, 212, 255, 0.01) 0%, transparent 50%);
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            width: 100%;
+            height: 100%;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .title .icon {
+            width: 2.2rem;
+            height: 2.2rem;
+            color: var(--neon);
+            filter: drop-shadow(0 0 8px var(--neon-glow));
+        }
+
+        .btn-add-goal {
+            background: transparent;
+            border: 1px solid var(--neon-dim);
+            color: var(--neon);
+            padding: 0.6rem 1.2rem;
+            border-radius: 3rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all var(--transition);
+            backdrop-filter: blur(4px);
+            font-family: var(--font);
+        }
+
+        .btn-add-goal:hover {
+            background: rgba(0, 255, 136, 0.08);
+            border-color: var(--neon);
+            box-shadow: 0 0 20px var(--neon-glow);
+        }
+
+        .goals-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px dashed var(--border-hover);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .empty-state .icon {
+            width: 3rem;
+            height: 3rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .goal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card.stagnant {
+            border-color: var(--warning);
+            box-shadow: 0 0 18px var(--warning-glow);
+        }
+
+        .goal-card.achieved {
+            border-color: var(--gold);
+            box-shadow: 0 0 24px var(--gold-glow);
+            background: linear-gradient(145deg, #0a0a0a 0%, #1a1a0a 100%);
+        }
+
+        .goal-card.achieved .progress-fill {
+            background: linear-gradient(90deg, var(--gold), #ffaa00);
+            box-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .goal-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+            word-break: break-word;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border-hover);
+            color: var(--text-secondary);
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+            color: var(--white);
+        }
+
+        .icon-btn.edit-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .icon-btn.delete-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .icon-btn .icon {
+            width: 1rem;
+            height: 1rem;
+            pointer-events: none;
+        }
+
+        .progress-section {
+            margin: 1rem 0 0.8rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .percentage {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--neon);
+        }
+
+        .achieved .percentage {
+            color: var(--gold);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.55rem;
+            background: var(--surface-2);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-dim), var(--neon));
+            border-radius: 1rem;
+            box-shadow: 0 0 12px var(--neon-glow);
+            transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        .goal-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+            margin: 0.8rem 0 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .stat-item .icon {
+            width: 1rem;
+            height: 1rem;
+            flex-shrink: 0;
+        }
+
+        .remaining strong,
+        .prediction strong {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .stagnation-warning {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--warning);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            animation: pulse-warning 2s infinite;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .achieved-mark {
+            color: var(--gold);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .deposit-btn {
+            background: var(--surface-2);
+            border: 1px solid var(--border-hover);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all var(--transition);
+            font-family: var(--font);
+            margin-top: 0.2rem;
+        }
+
+        .deposit-btn:hover {
+            background: rgba(0, 255, 136, 0.08);
+            border-color: var(--neon);
+            color: var(--neon);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            color: var(--text);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal h3 {
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .modal input {
+            width: 100%;
+            background: var(--surface-2);
+            border: 1px solid var(--border-hover);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-family: var(--font);
+            font-size: 1rem;
+            outline: none;
+            transition: border var(--transition);
+        }
+
+        .modal input:focus {
+            border-color: var(--neon);
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-hover);
+            background: var(--surface-2);
+            color: var(--text);
+            cursor: pointer;
+            font-family: var(--font);
+            font-weight: 600;
+            transition: all var(--transition);
+        }
+
+        .btn.primary {
+            background: var(--neon-dim);
+            border-color: var(--neon);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .btn.primary:hover {
+            background: var(--neon);
+            box-shadow: 0 0 18px var(--neon-glow-strong);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1 class="title">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <use href="#icon-target"/>
+                </svg>
+                أهدافي المالية
+            </h1>
+            <button id="add-goal-btn" class="btn-add-goal">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <use href="#icon-plus"/>
+                </svg>
+                هدف جديد
+            </button>
+        </header>
+
+        <main class="goals-container" id="goals-container"></main>
+
+        <div class="empty-state" id="empty-state">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <use href="#icon-target"/>
+            </svg>
+            <span>لا توجد أهداف حتى الآن. أضف هدفك الأول.</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="goal-modal">
+        <div class="modal">
+            <h3>هدف جديد</h3>
+            <input type="text" id="goal-name-input" placeholder="اسم الهدف (مثلاً: سيارة, سفر)">
+            <input type="number" id="goal-target-input" placeholder="المبلغ المطلوب (درهم)" min="1">
+            <div class="modal-actions">
+                <button class="btn cancel" id="cancel-goal">إلغاء</button>
+                <button class="btn primary" id="save-goal">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal">
+            <h3>تعديل الهدف</h3>
+            <input type="text" id="edit-goal-name-input" placeholder="اسم الهدف">
+            <input type="number" id="edit-goal-target-input" placeholder="المبلغ المطلوب (درهم)" min="1">
+            <input type="hidden" id="edit-goal-id">
+            <div class="modal-actions">
+                <button class="btn cancel" id="cancel-edit">إلغاء</button>
+                <button class="btn primary" id="save-edit">تحديث</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deposit-modal">
+        <div class="modal">
+            <h3>إضافة مبلغ</h3>
+            <input type="number" id="deposit-amount-input" placeholder="المبلغ المضاف (درهم)" min="0.01" step="0.01">
+            <div class="modal-actions">
+                <button class="btn cancel" id="cancel-deposit">إلغاء</button>
+                <button class="btn primary" id="save-deposit">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <svg style="display:none">
+        <defs>
+            <g id="icon-target">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/>
+                <circle cx="12" cy="12" r="5" stroke="currentColor" fill="none" stroke-width="2"/>
+                <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+            </g>
+            <g id="icon-plus">
+                <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+            <g id="icon-trash">
+                <polyline points="3 6 5 6 21 6" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                <path d="M19 6l-1 15a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" fill="none" stroke-width="2"/>
+                <line x1="10" y1="11" x2="10" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="14" y1="11" x2="14" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g id="icon-edit">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" fill="none" stroke-width="2" stroke-linejoin="round"/>
+            </g>
+            <g id="icon-deposit">
+                <line x1="12" y1="19" x2="12" y2="5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <polyline points="7 10 12 5 17 10" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g id="icon-clock">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polyline points="12 7 12 12 16 14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g id="icon-warning">
+                <path d="M12 2L2 22h20L12 2z" stroke="currentColor" fill="none" stroke-width="2" stroke-linejoin="round"/>
+                <line x1="12" y1="10" x2="12" y2="15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="12" cy="18.5" r="1.2" fill="currentColor"/>
+            </g>
+            <g id="icon-check">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polyline points="8 12 11 15 16 9" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+        </defs>
+    </svg>
+
+    <script>
+        (function() {
+            const goalsContainer = document.getElementById('goals-container');
+            const emptyState = document.getElementById('empty-state');
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            const ctx = confettiCanvas.getContext('2d');
+
+            const goalModal = document.getElementById('goal-modal');
+            const editModal = document.getElementById('edit-modal');
+            const depositModal = document.getElementById('deposit-modal');
+            const goalNameInput = document.getElementById('goal-name-input');
+            const goalTargetInput = document.getElementById('goal-target-input');
+            const editGoalNameInput = document.getElementById('edit-goal-name-input');
+            const editGoalTargetInput = document.getElementById('edit-goal-target-input');
+            const editGoalIdInput = document.getElementById('edit-goal-id');
+            const depositAmountInput = document.getElementById('deposit-amount-input');
+
+            let currentGoalIdForDeposit = null;
+            let goals = [];
+
+            const STORAGE_KEY = 'financial_goals_v3';
+            const ONE_DAY_MS = 86400000;
+
+            function saveGoals() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
+            }
+
+            function loadGoals() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        goals = JSON.parse(stored);
+                        goals.forEach(g => {
+                            g.createdAt = new Date(g.createdAt);
+                            g.lastDepositDate = g.lastDepositDate ? new Date(g.lastDepositDate) : null;
+                            g.deposits = g.deposits || [];
+                            g.deposits = g.deposits.map(d => ({ ...d, date: new Date(d.date) }));
+                            g.id = String(g.id);
+                        });
+                    } catch (e) {
+                        goals = [];
+                    }
+                } else {
+                    goals = [];
+                }
+            }
+
+            function getCurrentAmount(goal) {
+                return goal.deposits.reduce((sum, d) => sum + d.amount, 0);
+            }
+
+            function getDailyAverage(goal) {
+                if (!goal.deposits.length) return 0;
+                const firstDepositDate = new Date(Math.min(...goal.deposits.map(d => d.date.getTime())));
+                const now = new Date();
+                const daysDiff = Math.max(1, (now - firstDepositDate) / ONE_DAY_MS);
+                return getCurrentAmount(goal) / daysDiff;
+            }
+
+            function predictCompletion(goal) {
+                const current = getCurrentAmount(goal);
+                const remaining = goal.target - current;
+                if (remaining <= 0) return { daysLeft: 0, dateStr: 'اليوم' };
+                const avg = getDailyAverage(goal);
+                if (avg <= 0) return { daysLeft: null, dateStr: 'غير متاح' };
+                const daysLeft = Math.ceil(remaining / avg);
+                const predictedDate = new Date(Date.now() + daysLeft * ONE_DAY_MS);
+                const dateStr = new Intl.DateTimeFormat('ar', {
+                    numberingSystem: 'latn',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }).format(predictedDate);
+                return { daysLeft, dateStr };
+            }
+
+            function formatNumber(num) {
+                return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(num);
+            }
+
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            let confettiAnimationId = null;
+            let confettiParticles = [];
+
+            function launchConfetti() {
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+                confettiParticles = [];
+                const colors = ['#00ff88', '#ffd700', '#00d4ff', '#ff9500', '#ff3b30', '#af52de', '#ffffff'];
+                for (let i = 0; i < 200; i++) {
+                    confettiParticles.push({
+                        x: Math.random() * confettiCanvas.width,
+                        y: Math.random() * confettiCanvas.height * -0.5,
+                        w: Math.random() * 8 + 4,
+                        h: Math.random() * 6 + 2,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: Math.random() * 3 + 2,
+                        rotation: Math.random() * 360,
+                        rotationSpeed: (Math.random() - 0.5) * 10,
+                        opacity: 1
+                    });
+                }
+
+                function animateConfetti() {
+                    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                    let active = false;
+                    confettiParticles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.12;
+                        p.rotation += p.rotationSpeed;
+                        p.opacity -= 0.003;
+                        if (p.opacity <= 0) p.opacity = 0;
+                        else active = true;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate((p.rotation * Math.PI) / 180);
+                        ctx.globalAlpha = p.opacity;
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                        ctx.restore();
+                    });
+                    if (active) {
+                        confettiAnimationId = requestAnimationFrame(animateConfetti);
+                    } else {
+                        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                        cancelAnimationFrame(confettiAnimationId);
+                        confettiAnimationId = null;
+                    }
+                }
+                if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+                animateConfetti();
+            }
+
+            function renderGoals() {
+                goalsContainer.innerHTML = '';
+                if (goals.length === 0) {
+                    emptyState.style.display = 'flex';
+                } else {
+                    emptyState.style.display = 'none';
+                    goals.forEach(goal => {
+                        const card = createGoalCard(goal);
+                        goalsContainer.appendChild(card);
+                    });
+                }
+            }
+
+            function createGoalCard(goal) {
+                const current = getCurrentAmount(goal);
+                const percent = Math.min((current / goal.target) * 100, 100);
+                const isAchieved = percent >= 100;
+                const remaining = Math.max(goal.target - current, 0);
+                const prediction = predictCompletion(goal);
+                const lastDeposit = goal.lastDepositDate ? new Date(goal.lastDepositDate) : null;
+                const daysSinceLastDeposit = lastDeposit ? (new Date() - lastDeposit) / ONE_DAY_MS : 999;
+                const isStagnant = !isAchieved && daysSinceLastDeposit > 2 && current > 0;
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `goal-card${isAchieved ? ' achieved' : ''}${isStagnant ? ' stagnant' : ''}`;
+                cardDiv.dataset.goalId = goal.id;
+
+                cardDiv.innerHTML = `
+                    <div class="card-header">
+                        <span class="goal-name">${escapeHTML(goal.name)}</span>
+                        <div class="goal-actions">
+                            <button class="icon-btn edit-btn" data-action="edit" data-goal-id="${goal.id}" title="تعديل الهدف">
+                                <svg class="icon" viewBox="0 0 24 24"><use href="#icon-edit"/></svg>
+                            </button>
+                            <button class="icon-btn delete-btn" data-action="delete" data-goal-id="${goal.id}" title="حذف الهدف">
+                                <svg class="icon" viewBox="0 0 24 24"><use href="#icon-trash"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="percentage">${percent.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%;"></div>
+                        </div>
+                    </div>
+                    <div class="goal-stats">
+                        <div class="stat-item remaining">
+                            <svg class="icon" viewBox="0 0 24 24"><use href="#icon-target"/></svg>
+                            <span>متبقي: <strong>${formatNumber(remaining)} درهم</strong></span>
+                        </div>
+                        <div class="stat-item prediction">
+                            <svg class="icon" viewBox="0 0 24 24"><use href="#icon-clock"/></svg>
+                            <span>التوقع: <strong>${prediction.daysLeft !== null ? `خلال ${prediction.daysLeft} يوم (${prediction.dateStr})` : prediction.dateStr}</strong></span>
+                        </div>
+                        ${isStagnant ? `<div class="stagnation-warning"><svg class="icon" viewBox="0 0 24 24"><use href="#icon-warning"/></svg><span>آخر إيداع منذ أكثر من يومين - استمر بالادخار!</span></div>` : ''}
+                        ${isAchieved ? `<div class="achieved-mark"><svg class="icon" viewBox="0 0 24 24"><use href="#icon-check"/></svg><span>هدف مكتمل - أحسنت!</span></div>` : ''}
+                    </div>
+                    <button class="deposit-btn" data-action="deposit" data-goal-id="${goal.id}">
+                        <svg class="icon" viewBox="0 0 24 24"><use href="#icon-deposit"/></svg>
+                        إضافة مبلغ
+                    </button>
+                `;
+
+                return cardDiv;
+            }
+
+            // ✅ معالج موحد لجميع الأزرار (تعديل / حذف / إيداع) باستخدام تفويض الأحداث
+            goalsContainer.addEventListener('click', function(e) {
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const action = button.dataset.action;
+                const goalId = button.dataset.goalId;
+
+                if (!action || !goalId) return;
+
+                // --- حذف الهدف (بعد التأكيد) ---
+                if (action === 'delete') {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const goalIdStr = String(goalId);
+                    const goal = goals.find(g => String(g.id) === goalIdStr);
+
+                    if (!goal) {
+                        console.warn('لم يتم العثور على الهدف المطلوب حذفه:', goalIdStr);
+                        return;
+                    }
+
+                    // مربع تأكيد بسيط (يمكن استبداله بمودال جميل لاحقاً)
+                    if (confirm(`هل أنت متأكد من حذف هدف "${goal.name}"؟`)) {
+                        // حذف الهدف من المصفوفة
+                        goals = goals.filter(g => String(g.id) !== goalIdStr);
+                        saveGoals();
+                        renderGoals(); // إعادة رسم الواجهة
+                    }
+                }
+
+                // --- تعديل الهدف ---
+                else if (action === 'edit') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const goal = goals.find(g => String(g.id) === String(goalId));
+                    if (goal) openEditModal(goal);
+                }
+
+                // --- إضافة مبلغ للإيداع ---
+                else if (action === 'deposit') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openDepositModal(goalId);
+                }
+            });
+
+            function animatePercentage(element, startPercent, endPercent, duration = 600) {
+                const startTime = performance.now();
+                function update(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const current = startPercent + (endPercent - startPercent) * progress;
+                    element.textContent = `${current.toFixed(1)}%`;
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        element.textContent = `${endPercent.toFixed(1)}%`;
+                    }
+                }
+                requestAnimationFrame(update);
+            }
+
+            function updateGoalCardAfterDeposit(goalId) {
+                const card = document.querySelector(`.goal-card[data-goal-id="${goalId}"]`);
+                if (!card) return;
+                const goal = goals.find(g => String(g.id) === String(goalId));
+                if (!goal) return;
+                const current = getCurrentAmount(goal);
+                const percent = Math.min((current / goal.target) * 100, 100);
+                const percentEl = card.querySelector('.percentage');
+                const oldPercent = parseFloat(percentEl.textContent) || 0;
+                animatePercentage(percentEl, oldPercent, percent, 600);
+
+                const progressFill = card.querySelector('.progress-fill');
+                progressFill.style.width = `${percent}%`;
+
+                const remaining = Math.max(goal.target - current, 0);
+                const prediction = predictCompletion(goal);
+                const remainingEl = card.querySelector('.remaining strong');
+                if (remainingEl) remainingEl.textContent = `${formatNumber(remaining)} درهم`;
+                const predictionEl = card.querySelector('.prediction strong');
+                if (predictionEl) {
+                    predictionEl.textContent = prediction.daysLeft !== null ? `خلال ${prediction.daysLeft} يوم (${prediction.dateStr})` : prediction.dateStr;
+                }
+
+                const isAchieved = percent >= 100;
+                const cardClasses = card.classList;
+                if (isAchieved) {
+                    cardClasses.add('achieved');
+                    cardClasses.remove('stagnant');
+                    if (!card.querySelector('.achieved-mark')) {
+                        const achievedMark = document.createElement('div');
+                        achievedMark.className = 'achieved-mark';
+                        achievedMark.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><use href="#icon-check"/></svg><span>هدف مكتمل - أحسنت!</span>`;
+                        card.querySelector('.goal-stats').appendChild(achievedMark);
+                    }
+                    const w = card.querySelector('.stagnation-warning');
+                    if (w) w.remove();
+                    launchConfetti();
+                } else {
+                    cardClasses.remove('achieved');
+                    const achievedMark = card.querySelector('.achieved-mark');
+                    if (achievedMark) achievedMark.remove();
+                }
+
+                const lastDeposit = goal.lastDepositDate ? new Date(goal.lastDepositDate) : null;
+                const daysSince = lastDeposit ? (new Date() - lastDeposit) / ONE_DAY_MS : 999;
+                const stagnant = !isAchieved && daysSince > 2 && current > 0;
+                if (stagnant) {
+                    cardClasses.add('stagnant');
+                    if (!card.querySelector('.stagnation-warning')) {
+                        const warningDiv = document.createElement('div');
+                        warningDiv.className = 'stagnation-warning';
+                        warningDiv.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><use href="#icon-warning"/></svg><span>آخر إيداع منذ أكثر من يومين - استمر بالادخار!</span>`;
+                        card.querySelector('.goal-stats').appendChild(warningDiv);
+                    }
+                } else {
+                    cardClasses.remove('stagnant');
+                    const w = card.querySelector('.stagnation-warning');
+                    if (w) w.remove();
+                }
+            }
+
+            function openGoalModal() {
+                goalModal.classList.add('active');
+                goalNameInput.value = '';
+                goalTargetInput.value = '';
+                goalNameInput.focus();
+            }
+
+            function closeGoalModal() {
+                goalModal.classList.remove('active');
+            }
+
+            function openEditModal(goal) {
+                editModal.classList.add('active');
+                editGoalNameInput.value = goal.name;
+                editGoalTargetInput.value = goal.target;
+                editGoalIdInput.value = goal.id;
+                editGoalNameInput.focus();
+            }
+
+            function closeEditModal() {
+                editModal.classList.remove('active');
+            }
+
+            function openDepositModal(goalId) {
+                currentGoalIdForDeposit = goalId;
+                depositModal.classList.add('active');
+                depositAmountInput.value = '';
+                depositAmountInput.focus();
+            }
+
+            function closeDepositModal() {
+                depositModal.classList.remove('active');
+                currentGoalIdForDeposit = null;
+            }
+
+            document.getElementById('add-goal-btn').addEventListener('click', openGoalModal);
+            document.getElementById('cancel-goal').addEventListener('click', closeGoalModal);
+            document.getElementById('save-goal').addEventListener('click', () => {
+                const name = goalNameInput.value.trim();
+                const target = parseFloat(goalTargetInput.value);
+                if (!name || isNaN(target) || target <= 0) {
+                    alert('يرجى إدخال اسم صحيح ومبلغ أكبر من صفر');
+                    return;
+                }
+                const newGoal = {
+                    id: String(Date.now()) + Math.random(),
+                    name,
+                    target,
+                    deposits: [],
+                    createdAt: new Date(),
+                    lastDepositDate: null
+                };
+                goals.push(newGoal);
+                saveGoals();
+                renderGoals();
+                closeGoalModal();
+            });
+
+            document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
+            document.getElementById('save-edit').addEventListener('click', () => {
+                const goalId = editGoalIdInput.value;
+                const name = editGoalNameInput.value.trim();
+                const target = parseFloat(editGoalTargetInput.value);
+                if (!name || isNaN(target) || target <= 0) {
+                    alert('يرجى إدخال اسم صحيح ومبلغ أكبر من صفر');
+                    return;
+                }
+                const goal = goals.find(g => String(g.id) === String(goalId));
+                if (!goal) return;
+                goal.name = name;
+                goal.target = target;
+                saveGoals();
+                renderGoals();
+                closeEditModal();
+            });
+
+            document.getElementById('cancel-deposit').addEventListener('click', closeDepositModal);
+            document.getElementById('save-deposit').addEventListener('click', () => {
+                if (!currentGoalIdForDeposit) return;
+                const amount = parseFloat(depositAmountInput.value);
+                if (isNaN(amount) || amount <= 0) {
+                    alert('يرجى إدخال مبلغ صحيح أكبر من صفر');
+                    return;
+                }
+                const goal = goals.find(g => String(g.id) === String(currentGoalIdForDeposit));
+                if (!goal) return;
+                goal.deposits.push({ amount, date: new Date() });
+                goal.lastDepositDate = new Date();
+                saveGoals();
+                updateGoalCardAfterDeposit(currentGoalIdForDeposit);
+                closeDepositModal();
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === goalModal) closeGoalModal();
+                if (e.target === editModal) closeEditModal();
+                if (e.target === depositModal) closeDepositModal();
+            });
+
+            function checkStagnationAll() {
+                goals.forEach(goal => {
+                    const card = document.querySelector(`.goal-card[data-goal-id="${goal.id}"]`);
+                    if (!card) return;
+                    const current = getCurrentAmount(goal);
+                    const percent = Math.min((current / goal.target) * 100, 100);
+                    if (percent >= 100) {
+                        card.classList.remove('stagnant');
+                        const w = card.querySelector('.stagnation-warning');
+                        if (w) w.remove();
+                        return;
+                    }
+                    const lastDeposit = goal.lastDepositDate ? new Date(goal.lastDepositDate) : null;
+                    const daysSince = lastDeposit ? (new Date() - lastDeposit) / ONE_DAY_MS : 999;
+                    const stagnant = daysSince > 2 && current > 0;
+                    if (stagnant) {
+                        card.classList.add('stagnant');
+                        if (!card.querySelector('.stagnation-warning')) {
+                            const statsDiv = card.querySelector('.goal-stats');
+                            const warningDiv = document.createElement('div');
+                            warningDiv.className = 'stagnation-warning';
+                            warningDiv.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><use href="#icon-warning"/></svg><span>آخر إيداع منذ أكثر من يومين - استمر بالادخار!</span>`;
+                            statsDiv.appendChild(warningDiv);
+                        }
+                    } else {
+                        card.classList.remove('stagnant');
+                        const w = card.querySelector('.stagnation-warning');
+                        if (w) w.remove();
+                    }
+                });
+            }
+
+            setInterval(checkStagnationAll, 60000);
+
+            loadGoals();
+            renderGoals();
+            checkStagnationAll();
+
+            window.addEventListener('resize', () => {
+                if (confettiCanvas) {
+                    confettiCanvas.width = window.innerWidth;
+                    confettiCanvas.height = window.innerHeight;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
