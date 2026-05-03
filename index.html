@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>أهدافي المالية</title>
-    <!-- أيقونة التطبيق للشاشة الرئيسية -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><circle cx='12' cy='12' r='1.5' fill='%2300ff88'/></svg>">
+    <!-- أيقونة التطبيق للشاشة الرئيسية (Favicon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><circle cx='12' cy='12' r='1.5' fill='%2300ff88'/></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'><circle cx='12' cy='12' r='9'/><circle cx='12' cy='12' r='5'/><circle cx='12' cy='12' r='1.5' fill='%2300ff88'/></svg>">
     <style>
         :root {
@@ -168,7 +168,7 @@
             width: 2.4rem; height: 2.4rem; border-radius: var(--radius);
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-        .category-badge .cat-icon { width: 1.3rem; height: 1.3rem; }
+        .category-badge .cat-icon { width: 1.3rem; height: 1.3rem; stroke: currentColor; }
         .goal-name-wrapper { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
         .goal-name { font-size: 1.2rem; font-weight: 700; color: var(--white); word-break: break-word; }
         .goal-meta { font-size: 0.7rem; color: var(--text-muted); display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -418,7 +418,7 @@
 
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- مكتبة الأيقونات -->
+    <!-- مكتبة الأيقونات الحديثة (SVG) -->
     <svg style="display:none">
         <defs>
             <g id="icon-target"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="currentColor" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></g>
@@ -436,17 +436,17 @@
             <g id="icon-box"><rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2"/><line x1="12" y1="6" x2="12" y2="20" stroke="currentColor" stroke-width="2"/></g>
 
             <!-- أيقونات الفئات -->
-            <g id="icon-car"><path d="M5 11l1.5-4h11l1.5 4M6 15h1m10 0h1M7 11h10" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="17" r="1" fill="currentColor"/><circle cx="16" cy="17" r="1" fill="currentColor"/></g>
+            <g id="icon-car"><path d="M5 11l1.5-4h11l1.5 4M6 15h1m10 0h1M7 11h10" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="17" r="1.2" fill="currentColor"/><circle cx="16" cy="17" r="1.2" fill="currentColor"/></g>
             <g id="icon-travel"><path d="M12 3L4 9v3l4 1v5l4-1 4 1v-5l4-1V9z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="13" stroke="currentColor" stroke-width="1.8"/></g>
             <g id="icon-home"><path d="M3 10L12 4l9 6v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10z" stroke="currentColor" fill="none" stroke-width="1.8"/><rect x="9" y="14" width="6" height="6" stroke="currentColor" fill="none" stroke-width="1.8"/></g>
-            <g id="icon-education"><path d="M6 5v14m0-7h12M6 5l12 4M6 5L18 9" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></g>
+            <g id="icon-education"><path d="M4 6l8-4 8 4-8 4-8-4zm0 5l8 4 8-4" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
             <g id="icon-health"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.9-8.9a5.5 5.5 0 0 0 0-7.8z" stroke="currentColor" fill="none" stroke-width="1.8"/></g>
             <g id="icon-investment"><polyline points="3 17 8 12 13 16 21 8" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 8 21 8 21 13" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></g>
-            <g id="icon-debt"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="15" x2="7" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+            <g id="icon-debt"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="15" x2="7" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="17" y1="15" x2="17" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
             <g id="icon-gift"><rect x="5" y="8" width="14" height="12" rx="2" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="12" y1="8" x2="12" y2="20" stroke="currentColor" stroke-width="1.8"/><path d="M8 8c0-2 2-4 4-4s4 2 4 4" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></g>
-            <g id="icon-project"><rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="4" y1="9" x2="20" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="5" x2="9" y2="9" stroke="currentColor" stroke-width="1.8"/></g>
+            <g id="icon-project"><rect x="4" y="5" width="16" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="4" y1="9" x2="20" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="5" x2="9" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="15" y1="5" x2="15" y2="9" stroke="currentColor" stroke-width="1.8"/></g>
             <g id="icon-entertainment"><path d="M6 11h4v3H6zm8 0h4v3h-4zm-4-4l4 3h3l-3-3 3-3h-3l-4 3z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linejoin="round"/></g>
-            <g id="icon-emergency"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="12" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="14" x2="12" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+            <g id="icon-emergency"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="1.8"/><line x1="12" y1="7" x2="12" y2="12" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="14" x2="12" y2="16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 7l10 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
             <g id="icon-custom"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="1.8" stroke-dasharray="4 2"/><line x1="12" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.8"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="1.8"/></g>
         </defs>
     </svg>
@@ -955,7 +955,7 @@
             setInterval(checkStagnationAll, 60000);
 
             function randomTip(){
-                tipBar.textContent = '💡 ' + tips[Math.floor(Math.random()*tips.length)];
+                tipBar.textContent = tips[Math.floor(Math.random()*tips.length)];
             }
             randomTip();
             setInterval(randomTip, 30000);
