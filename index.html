@@ -6,8 +6,8 @@
     <title>أهدافي المالية</title>
 
     <!-- أيقونة الشاشة الرئيسية للتطبيق (Favicon & Apple Touch Icon) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2.5'><circle cx='12' cy='12' r='9' stroke='%2300ff88' fill='%23000000' stroke-width='2'/><circle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/><circle cx='12' cy='12' r='1.8' fill='%2300ff88'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><circle cx='12' cy='12' r='9' stroke='%2300ff88' fill='%23000000' stroke-width='2'/><circle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/><circle cx='12' cy='12' r='1.8' fill='%2300ff88'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23000000' stroke='%2300ff88' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='1.8' fill='%2300ff88'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23000000' stroke='%2300ff88' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='5' stroke='%2300ff88' fill='none' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='1.8' fill='%2300ff88'/%3E%3C/svg%3E">
 
     <!-- تفعيل وضع التطبيق المستقل على iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,6 +45,7 @@
             --radius-lg: 14px;
             --radius-xl: 18px;
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --sat: env(safe-area-inset-top, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -64,7 +65,7 @@
             overflow-x: hidden;
             display: flex;
             justify-content: center;
-            padding: 1.5rem 1rem 3rem;
+            padding: calc(1.5rem + var(--sat)) 1rem 3rem;
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
@@ -266,6 +267,12 @@
         .history-list::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 1rem; }
         .history-item { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); background: var(--surface-2); font-size: 0.75rem; color: var(--text-secondary); }
         .history-item .amount { color: var(--neon); font-weight: 600; }
+        .history-item .delete-deposit-btn {
+            background: none; border: 1px solid transparent; color: var(--text-muted);
+            width: 1.5rem; height: 1.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all var(--transition); font-family: var(--font); font-size: 0.8rem;
+        }
+        .history-item .delete-deposit-btn:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,59,48,0.1); }
 
         .tip-bar {
             background: var(--surface-2); border: 1px solid var(--border-hover); border-radius: var(--radius-lg);
@@ -317,7 +324,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateX(50%) translateY(20px); } to { opacity: 1; transform: translateX(50%) translateY(0); } }
 
         @media (max-width: 500px) {
-            body { padding: 1rem 0.6rem 3rem; }
+            body { padding: calc(1rem + var(--sat)) 0.6rem 3rem; }
             .title { font-size: 1.5rem; }
             .goal-card { padding: 1.1rem; }
             .goal-name { font-size: 1rem; }
@@ -396,7 +403,7 @@
             <div class="form-group"><label>الأولوية</label>
                 <select id="goal-priority"><option value="medium">متوسطة</option><option value="high">عالية</option><option value="low">منخفضة</option></select>
             </div>
-            <div class="form-group"><label>تاريخ الاستحقاق (اختياري)</label><input type="date" id="goal-deadline"></div>
+            <div class="form-group"><label>تاريخ الاستحقاق (اختياري)</label><input type="date" id="goal-deadline" style="padding:0.65rem 0.9rem;font-size:0.88rem;"></div>
             <div class="modal-actions">
                 <button class="btn cancel" id="cancel-goal">إلغاء</button>
                 <button class="btn primary" id="save-goal">حفظ</button>
@@ -491,6 +498,7 @@
             const archiveContent = document.getElementById('archive-content');
 
             let currentGoalIdForDeposit = null;
+            let currentGoalIdForHistory = null;
             let goals = [];
             let archivedGoals = [];
             let lastDeletedGoal = null;
@@ -846,21 +854,46 @@
             function closeDepositModal(){ depositModal.classList.remove('active'); currentGoalIdForDeposit=null; }
 
             function openHistoryModal(goal){
+                currentGoalIdForHistory = goal.id;
                 historyContent.innerHTML = '';
                 if(!goal.deposits.length){ historyContent.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:2rem;">لا توجد مدفوعات بعد</p>'; }
                 else {
                     const list = document.createElement('ul'); list.className='history-list';
-                    [...goal.deposits].reverse().forEach(d=>{
+                    goal.deposits.forEach((d, index) => {
                         const li = document.createElement('li'); li.className='history-item';
                         const dateStr = new Date(d.date).toLocaleDateString('ar',{numberingSystem:'latn',month:'short',day:'numeric',year:'numeric'});
-                        li.innerHTML = `<span>${dateStr}${d.note?` - ${escapeHTML(d.note)}`:''}</span><span class="amount">+${formatNumber(d.amount)} درهم</span>`;
+                        li.innerHTML = `
+                            <span>${dateStr}${d.note?` - ${escapeHTML(d.note)}`:''}</span>
+                            <div style="display:flex;align-items:center;gap:0.3rem;">
+                                <span class="amount">+${formatNumber(d.amount)} درهم</span>
+                                <button class="delete-deposit-btn" data-deposit-index="${index}" title="حذف الإيداع">×</button>
+                            </div>
+                        `;
                         list.appendChild(li);
                     });
                     historyContent.appendChild(list);
+
+                    // إضافة مستمعي الأحداث لأزرار حذف الإيداع
+                    historyContent.querySelectorAll('.delete-deposit-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const index = parseInt(btn.dataset.depositIndex);
+                            const goal = goals.find(g => String(g.id) === String(currentGoalIdForHistory));
+                            if (goal && index >= 0 && index < goal.deposits.length) {
+                                if (confirm('هل أنت متأكد من حذف هذا الإيداع؟')) {
+                                    goal.deposits.splice(index, 1);
+                                    goal.lastDepositDate = goal.deposits.length ? new Date(Math.max(...goal.deposits.map(d => d.date.getTime()))) : null;
+                                    saveGoals();
+                                    updateGoalCardAfterDeposit(goal.id);
+                                    openHistoryModal(goal); // تحديث عرض السجل
+                                }
+                            }
+                        });
+                    });
                 }
                 historyModal.classList.add('active');
             }
-            function closeHistoryModal(){ historyModal.classList.remove('active'); }
+            function closeHistoryModal(){ historyModal.classList.remove('active'); currentGoalIdForHistory = null; }
 
             function openArchiveModal(){
                 archiveContent.innerHTML = '';
